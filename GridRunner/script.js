@@ -8,15 +8,89 @@ window.addEventListener("load", start);
 function start() {
   console.log(`Javascript kører`);
 
+  document.addEventListener("keydown", keyDown);
+
   // start ticking
   tick();
 }
 
+function keyDown(event) {
+  console.log(event.key);
+
+  switch(event.key){
+    case "ArrowLeft":
+    case "a":
+      direction = "left";
+      break;
+    case "ArrowRight":  
+    case "d":
+      direction = "right";
+      break;
+
+    case "ArrowUp":
+    case "w":
+      direction = "up";
+      break;
+    case "ArrowDown":
+    case "s":
+      direction = "down";
+      break;
+  }
+}
+
 function tick() {
   // setup next tick
-  setTimeout(tick, 500);
+  setTimeout(tick, 200);
 
   // TODO: Do stuff
+
+  for (const part of queue) {
+    writeToCell(part.row, part.col, 0);
+  }
+
+  const head = {
+    row: queue[queue.length-1].row,
+    col: queue[queue.length-1].col
+  }
+
+
+  switch(direction){
+
+    case "left":
+  // move player left
+  head.col--;
+  if (head.col < 0) {
+    head.col = 9;
+  }
+  break;
+  case "right":
+  // move player right
+  head.col++
+  if(head.col > 9){
+    head.col = 0;
+  }
+  break;
+  case "up":
+  // move player up
+  head.row--;
+  if(head.row < 0){
+    head.row = 9;
+  }
+  break;
+  case "down":
+  // move player down
+  head.row++;
+  if(head.row > 9){
+    head.row = 0;
+  }
+}
+
+queue.push(head);
+queue.shift();
+
+for (const part of queue) {
+  writeToCell(part.row, part.col, 1);
+}
 
   // display the model in full
   displayBoard();
@@ -38,6 +112,15 @@ const model = [
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
+
+const queue = [
+  { row: 5, col: 5 },
+  { row: 5, col: 6 },
+  { row: 5, col: 7 },
+];
+
+
+let direction = "left";
 
 function writeToCell(row, col, value) {
   model[row][col] = value;
