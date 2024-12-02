@@ -4,10 +4,10 @@ function start() {
   console.log("Ready.");
   let root = tree.createRootNode(50);
   // TODO: when the addItem function is working - remove this line:
-  buildTreeManually(root);
+  // buildTreeManually(root);
 
   // TODO when: the addItem function is working, comment these lines back in:
-  /*
+  
   tree.addItem(30);
   tree.addItem(70);
   tree.addItem(20);
@@ -17,7 +17,7 @@ function start() {
   tree.addItem(45);
   tree.addItem(60);
   tree.addItem(80);
-*/
+
 
 
 }
@@ -67,11 +67,68 @@ class BinaryTree {
       left: null,
       right: null,
       item: item,
-      height: 0
+      height: 0,
     };
   }
 
   /* TODO: Add more methods here: e.g. addItem( itemValue ) */
+
+  addItem(itemValue) {
+    // if (this.root === null) {
+    //   this.createRootNode(itemValue);
+    //   return;
+    // }
+
+    let node = this.root;
+
+    while (true) {
+      if (node.item > itemValue) {
+        if (node.left === null) {
+          node.left = this.createChild(itemValue, node);
+          this.maintain(node)
+          break;
+        } else {
+          node = node.left;
+        }
+      } else if (node.item < itemValue) {
+        if (node.right === null) {
+          node.right = this.createChild(itemValue, node);
+          this.maintain(node)
+          break;
+        } else {
+          node = node.right;
+        }
+      } else {
+        // If the itemValue is equal to node.item, we do nothing (assuming no duplicates allowed)
+        break;
+      }
+    }
+  }
+
+  dfs(node) {
+    if(!node) {
+      return
+    } else {
+    this.dfs(node.left)
+    console.log(node.item)
+    this.dfs(node.right)
+  }
+}
+
+updateHeight(node) {
+  let leftHeight = node.left ? node.left.height : -1;
+  let rightHeight = node.right ? node.right.height : -1;
+
+  node.height = Math.max(leftHeight, rightHeight) + 1;
+}
+
+maintain(node) {
+  this.updateHeight(node);
+  if(node.parent) {
+    this.maintain(node.parent);
+  }
+}
+
 
 
   print() {
@@ -79,7 +136,7 @@ class BinaryTree {
     // each level (starting from root) is an array in the array that doubles in size from the previous level
 
     // breaks if the tree is too deep - but that's a problem for another day
-     
+
     // Use DFS to fill array with values
     const treeArray = [];
     let height = 0; // and while we're at it, calculate the height of the tree
@@ -95,7 +152,7 @@ class BinaryTree {
       }
       height = Math.max(height, depth);
       // insert this node value in the 2D array
-      if(!treeArray[depth]) treeArray[depth] = [];
+      if (!treeArray[depth]) treeArray[depth] = [];
       treeArray[depth][indent] = node.item;
       // visit its children - remember to double indent
       buildTreeArray(node.left, depth + 1, indent * 2);
@@ -149,15 +206,21 @@ class BinaryTree {
       for (let i = 0; i < values.length; i++) {
         // if both children are undefined, don't show any of then
         // if only one child is, show it as underscores _
-        const showUndefined = !values[i - (i % 2)] && !values[i - (i % 2) + 1] ? " " : "_";
+        const showUndefined =
+          !values[i - (i % 2)] && !values[i - (i % 2) + 1] ? " " : "_";
         // if depth is lowest (height-1) - pad values to two characters
-        if (depth == height)  {
-          treeString += String(values[i] ?? showUndefined.repeat(2)).padStart(2, " ");
+        if (depth == height) {
+          treeString += String(values[i] ?? showUndefined.repeat(2)).padStart(
+            2,
+            " "
+          );
           // and add a single space
           treeString += " ";
         } else {
           // otherwise center values in block of three
-          treeString += String(values[i] ?? showUndefined.repeat(3)).padEnd(2, " ").padStart(3, " ");
+          treeString += String(values[i] ?? showUndefined.repeat(3))
+            .padEnd(2, " ")
+            .padStart(3, " ");
 
           // and add twice the indentation of spaces + 1 in the middle
           treeString += " ".repeat(indent - 1);
